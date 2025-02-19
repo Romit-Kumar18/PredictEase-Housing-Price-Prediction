@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Finder</title>
+  <link rel="stylesheet" type="text/css" href="/Frontend/Static/css/style.css">
+</head>
+<body>
+<header>
+  <h1>PredictEase</h1>
+  <p>Find your dream property with ease</p>
+</header>
+<main>
+    <section class="search-section">
+        <h2>Search Your Special Property</h2>
+        <form id="property-search">
+            <div class="form-group">
+                <label for="sqft">Square Feet:</label>
+                <input type="number" id="sqft" name="sqft" placeholder="Enter square footage" required>
+            </div>
+            <div class="form-group">
+                <label for="bedrooms">Bedrooms:</label>
+                <input type="number" id="bedrooms" name="bedrooms" placeholder="Enter number of bedrooms" required>
+            </div>
+            <div class="form-group">
+                <label for="bathrooms">Bathrooms:</label>
+                <input type="number" id="bathrooms" name="bathrooms" placeholder="Enter number of bathrooms" required>
+            </div>
+            <div class="form-group">
+                <label for="location">Location:</label>
+                <select id="location" name="location" required>
+                    <option value="">Select Location</option>
+                    <option value="Adyar">Adyar</option>
+                    <option value="Anna Nagar">Anna Nagar</option>
+                    <option value="Chrompet">Chrompet</option>
+                    <option value="KK Nagar">KK Nagar</option>
+                    <option value="Karapakam">Karapakam</option>
+                    <option value="T Nagar">T Nagar</option>
+                    <option value="Velachery">Velachery</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="parking">Parking:</label>
+                <input type="checkbox" id="parking" name="parking">
+            </div>
+            <div class="form-group">
+                <label for="building-type">Building Type:</label>
+                <select id="building-type" name="building_type" required>
+                    <option value="House">Residential</option>
+                    <option value="Commercial">Commercial</option>
+                    <option value="Others">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="utility">Utility:</label>
+                <input type="checkbox" id="utility" name="utility">
+            </div>
+            <div class="form-group">
+                <label for="street-type">Street Type:</label>
+                <select id="street-type" name="street_type" required>
+                    <option value="Gravel">Gravel</option>
+                    <option value="Paved">Paved</option>
+                    <option value="No Access">No Access</option>
+                </select>
+            </div>
+            <button type="submit" class="search-button">Search your property!</button>
+        </form>
+    </section>
+    <section>
+        <div class="prediction-container" id="predictionContainer">
+            <h4>Prediction Result</h4>
+            <div class="prediction-amount" id="predictionAmount">
+                <p>Please search for a property to get a prediction.</p>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer>
+  <p>&copy; 2024 PredictEase All rights reserved.</p>
+</footer>
+<script>
+document.getElementById("property-search").addEventListener("submit", async function(event) {
+    event.preventDefault();
+    const sqft = parseInt(document.getElementById("sqft").value);
+    const bedrooms = parseInt(document.getElementById("bedrooms").value);
+    const bathrooms = parseInt(document.getElementById("bathrooms").value);
+    const location = document.getElementById("location").value;
+    const parking = document.getElementById("parking").checked;
+    const buildingType = document.getElementById("building-type").value;
+    const utility = document.getElementById("utility").checked;
+    const streetType = document.getElementById("street-type").value;
+
+    const areaMapping = {
+        "Adyar": [1, 0, 0, 0, 0, 0, 0],
+        "Anna Nagar": [0, 1, 0, 0, 0, 0, 0],
+        "Chrompet": [0, 0, 1, 0, 0, 0, 0],
+        "KK Nagar": [0, 0, 0, 1, 0, 0, 0],
+        "Karapakam": [0, 0, 0, 0, 1, 0, 0],
+        "T Nagar": [0, 0, 0, 0, 0, 1, 0],
+        "Velachery": [0, 0, 0, 0, 0, 0, 1]
+    };
+
+    const parkingMapping = {
+        true: [0, 1],
+        false: [1, 0]
+    };
+
+    const buildingTypeMapping = {
+        "Commercial": [1, 0, 0],
+        "House": [0, 1, 0],
+        "Others": [0, 0, 1]
+    };
+
+    const utilityMapping = {
+        true: [0, 1],
+        false: [1, 0]
+    };
+
+    const streetMapping = {
+        "Gravel": [1, 0, 0],
+        "No Access": [0, 1, 0],
+        "Paved": [0, 0, 1]
+    };
+
+    const requestData = {
+        INT_SQFT: sqft,
+        N_BEDROOM: bedrooms,
+        N_BATHROOM: bathrooms,
+        AREA_Adyar: areaMapping[location][0],
+        AREA_Anna_Nagar: areaMapping[location][1],
+        AREA_Chrompet: areaMapping[location][2],
+        AREA_KK_Nagar: areaMapping[location][3],
+        AREA_Karapakam: areaMapping[location][4],
+        AREA_T_Nagar: areaMapping[location][5],
+        AREA_Velachery: areaMapping[location][6],
+        PARK_FACIL_No: parkingMapping[parking][0],
+        PARK_FACIL_Yes: parkingMapping[parking][1],
+        BUILDTYPE_Commercial: buildingTypeMapping[buildingType][0],
+        BUILDTYPE_House: buildingTypeMapping[buildingType][1],
+        BUILDTYPE_Others: buildingTypeMapping[buildingType][2],
+        UTILITY_AVAIL_No: utilityMapping[utility][0],
+        UTILITY_AVAIL_Yes: utilityMapping[utility][1],
+        STREET_Gravel: streetMapping[streetType][0],
+        STREET_No_Access: streetMapping[streetType][1],
+        STREET_Paved: streetMapping[streetType][2]
+    };
+
+    console.log("Request Data:", requestData);
+
+    try {
+        const response = await fetch("http://127.0.0.1:8000/predict", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(requestData)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        document.getElementById("predictionAmount").innerHTML = `<p>The predicted price of your property is: ₹${result.predicted_price}</p>`;
+    } catch (error) {
+        console.error("Error fetching prediction:", error);
+        document.getElementById("predictionAmount").innerHTML = `<p>Failed to get prediction. Try again.</p>`;
+    }
+});
+</script>
+</body>
+</html>
