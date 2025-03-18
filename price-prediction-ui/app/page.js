@@ -27,7 +27,7 @@ export default function Home() {
           </div>
           <div className="mt-2 max-w-xl text-center">
             Get house price estimates in Chennai using data-driven analytics. Ideal for buyers, sellers, and investors.</div>
-          <a href="/prediction" className="group m-5 border-2 border-solid border-white rounded-xl p-5 bg-orange-600 hover:bg-blue-600 hover:scale-105">
+          <a href="/prediction" className="group m-5 border-2 border-solid border-white rounded-xl p-5 transition duration-300 ease-in-out bg-orange-600 hover:bg-blue-600 hover:scale-105">
             <div>
               <p>Get Started</p>
             </div>
