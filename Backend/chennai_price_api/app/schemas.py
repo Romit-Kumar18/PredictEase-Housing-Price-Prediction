@@ -23,4 +23,4 @@ class HouseFeatures(BaseModel):
     STREET_Paved: int
 
 class PricePrediction(BaseModel):
-    predicted_price: float
+    prediction: float
