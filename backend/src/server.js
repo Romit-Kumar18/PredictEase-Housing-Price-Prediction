@@ -1,9 +1,10 @@
 const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
+require("dotenv").config();
 
 const app = express();
-const port = 5000;
+const ML_SERVICE_URL = process.env.ML_SERVICE_URL || "http://localhost:8000";
 
 app.use(cors());
 app.use(express.json());
@@ -43,7 +44,7 @@ app.post('/preprocess', async(req,res) => {
             ...utilityAvailEncoded,
             ...streetEncoded
         }
-        const response = await axios.post('http://127.0.0.1:8000/predict',inputData);
+        const response = await axios.post(`${ML_SERVICE_URL}/predict`,inputData);
 
         res.json(response.data);
 
@@ -55,6 +56,7 @@ app.post('/preprocess', async(req,res) => {
     }
 });
 
-app.listen(port, () => {
-    console.log('listening on port 5000');
+app.listen(process.env.PORT, () => {
+    console.log(process.env.PORT);
+    console.log(process.env.ML_SERVICE_URL);
 })

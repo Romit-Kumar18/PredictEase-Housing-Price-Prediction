@@ -3,9 +3,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.model_loader import model
 from app.schemas import HouseFeatures, PricePrediction
 import pandas as pd
+import os
 
 
 app = FastAPI(title="Chennai House Price Prediction API")
+
+PORT = os.getenv("PORT", 8000)
 
 app.add_middleware(
     CORSMiddleware,

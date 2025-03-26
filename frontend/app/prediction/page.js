@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, preventDefault } from "react";
+import { useState } from "react";
 
 export default function Home() {
   const [formData, setFormData] = useState({
@@ -24,7 +24,7 @@ export default function Home() {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/preprocess", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/preprocess`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
