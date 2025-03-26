@@ -1,7 +1,5 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
 from app.model_loader import model
 from app.schemas import HouseFeatures, PricePrediction
 import pandas as pd
@@ -30,10 +28,3 @@ def predict_price(house: HouseFeatures):
     prediction = model.predict(input_data)
 
     return {"prediction": round(prediction[0], 2)}
-
-@app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request, exc):
-    return JSONResponse(
-        status_code=422,
-        content={"message": "Validation Error", "details": exc.errors()},
-    )
