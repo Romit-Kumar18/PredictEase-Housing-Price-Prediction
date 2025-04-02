@@ -3,7 +3,8 @@ resource "aws_instance" "ecs_instance" {
   instance_type = "t2.micro"
   key_name = "my-key"
   iam_instance_profile = aws_iam_instance_profile.ecs_profile.name
-  security_groups = [aws_security_group.ecs_sg.name]
+  vpc_security_group_ids = [aws_security_group.ecs_sg.id]
+  subnet_id = aws_subnet.my_subnet_1.id
 
   user_data = <<-EOF
             #!/bin/bash

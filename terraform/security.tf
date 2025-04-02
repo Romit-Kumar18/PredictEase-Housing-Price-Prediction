@@ -37,7 +37,7 @@ resource "aws_vpc_security_group_ingress_rule" "ecs_http" {
 
 resource "aws_vpc_security_group_ingress_rule" "ecs_ssh" {
   security_group_id = aws_security_group.ecs_sg.id
-  cidr_ipv4 = var.my_ip
+  cidr_ipv4 = "0.0.0.0/0"
   from_port = 22
   to_port = 22
   ip_protocol = "tcp"
