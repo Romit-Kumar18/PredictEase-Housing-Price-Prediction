@@ -20,6 +20,27 @@
       args:
         creates: /usr/local/bin/docker-compose
 
+    - name: Copy Docker Images to EC2
+      copy:
+        src: ../frontend.tar
+        dest: /home/ec2-user/frontend.tar
+
+    - name: Copy Backend Image to EC2
+      copy:
+        src: ../backend.tar
+        dest: /home/ec2-user/backend.tar
+    
+    - name: Copy ML-Service Image to EC2
+      copy:
+        src: ../ml-service.tar
+        dest: /home/ec2-user/ml-service.tar
+    
+    - name: Load Docker Images into EC2 Docker
+      shell: |
+        docker load -i /home/ec2-user/frontend.tar
+        docker load -i /home/ec2-user/backend.tar
+        docker load -i /home/ec2-user/ml-service.tar
+
     - name: Copy docker-compose.yml
       copy:
         src: ../docker-compose.yml
