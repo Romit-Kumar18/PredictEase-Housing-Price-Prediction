@@ -4,4 +4,6 @@ resource "aws_ecs_service" "my_service" {
   task_definition = aws_ecs_task_definition.my_task.arn
   desired_count = 1
   launch_type = "EC2"
+
+  depends_on = [ aws_instance.ecs_instance ]
 }

@@ -7,9 +7,10 @@ resource "null_resource" "update_inventory" {
 
   provisioner "local-exec" {
     command = <<EOT
-      sleep 15
-      echo "[ecs_instance]" | tee ../ansible/inventory.ini
-      echo "${data.aws_instance.ecs_instance.public_ip}" | tee -a ../ansible/inventory.ini
+      @echo off
+      timeout /t 15 /nobreak >nul
+      echo [ecs_instance] > ..\ansible\inventory.ini
+      echo %data.aws_instance.ecs_instance.public_ip% >> ..\ansible\inventory.ini
     EOT
   }
 }
