@@ -16,5 +16,29 @@ resource "aws_instance" "ecs_instance" {
     Name = "ecs-instance"
   }
 
-  user_data = file("docker_pull.sh")
+  user_data = <<-EOF
+    #!/bin/bash
+
+    exec > /var/log/user-data.log 2>&1
+    set -x
+
+    sudo yum update -y
+    sudo yum install -y git libffi libffi-devel openssl-devel libxcrypt-compat chkconfig
+    sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+    sudo chmod +x /usr/local/bin/docker-compose
+
+    sudo chkconfig docker on
+    sudo service docker start
+
+    docker pull romitkumar18/predictease-housing-price-prediction-frontend:latest
+    docker pull romitkumar18/predictease-housing-price-prediction-backend:latest
+    docker pull romitkumar18/predictease-housing-price-prediction-ml-service:latest
+
+    git clone https://github.com/Romit-Kumar18/PredictEase-Housing-Price-Prediction.git /opt/predictease
+
+    cd /opt/predictease/terraform
+    sleep 10
+    sudo docker-compose up -d
+    EOF
+
 }

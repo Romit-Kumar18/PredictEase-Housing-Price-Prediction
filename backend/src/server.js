@@ -6,10 +6,20 @@ require("dotenv").config();
 const app = express();
 const ML_SERVICE_URL = process.env.ML_SERVICE_URL || "http://localhost:8000";
 
-app.use(cors());
+const corsOptions = {
+    origin: ['http://localhost:3000', 'http://your-ec2-public-ip:3000'],
+    methods: ['POST', 'GET', 'OPTIONS'],
+    allowedHeaders: ['Content-Type']
+  };
+
+app.use(cors(corsOptions));
 app.use(express.json());
+app.options('*', cors(corsOptions));
 
 app.post('/preprocess', async(req,res) => {
+    console.log('Received request:', req.method, req.url);
+    console.log('Headers:', req.headers);
+    console.log('Body:', req.body);
     try {
         const { INT_SQFT, N_BEDROOM, N_BATHROOM, AREA, PARK_FACIL, BUILDTYPE, UTILITY_AVAIL, STREET } = req.body;
 
@@ -51,8 +61,11 @@ app.post('/preprocess', async(req,res) => {
         console.log(response.data)
 
     } catch (e) {
-        console.error("Error:", e.message);
-        res.status(500).json({ error: "Failed to get prediction" });
+        console.error('Full error stack:', e);
+        res.status(500).json({ 
+            error: e.message,
+            stack: process.env.NODE_ENV !== 'production' ? e.stack : undefined
+        });
     }
 });
 
