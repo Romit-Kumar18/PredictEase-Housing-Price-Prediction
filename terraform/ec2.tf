@@ -12,7 +12,9 @@ resource "aws_instance" "ecs_instance" {
     volume_size = 30
     volume_type = "gp2"
   }
-    tags = {
-      Name = "ecs-instance"
-    }
+  tags = {
+    Name = "ecs-instance"
+  }
+
+  user_data = file("docker_pull.sh")
 }
