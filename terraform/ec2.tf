@@ -1,37 +1,27 @@
-resource "aws_instance" "ecs_instance" {
-  ami = "ami-071226ecf16aa7d96"
+resource "aws_launch_template" "ecs_instance_template" {
+  name_prefix = "ecs-instance-template"
+  image_id = "ami-0cf4380e9a9430646"
   instance_type = "t2.micro"
   key_name = "my-key"
-  iam_instance_profile = aws_iam_instance_profile.ecs_profile.name
-  vpc_security_group_ids = [aws_security_group.ecs_sg.id]
-  subnet_id = aws_subnet.my_subnet_1.id
+  iam_instance_profile {
+    name = aws_iam_instance_profile.ecs_profile.name
+  }
+  vpc_security_group_ids = [ aws_security_group.ecs_sg.id ]
 
-  user_data = <<-EOF
-            #!/bin/bash
-            yum update -y
-            yum install -y amazon-linux-extras
-            amazon-linux-extras enable ecs
-            yum install -y ecs-init
-            echo "ECS_CLUSTER=my-ecs-cluster" >> /etc/ecs/ecs.config
-            systemctl enable ecs
-            systemctl start ecs
-
-            mkfs -t ext4 /dev/xvdf
-            mkdir /mnt/ecs-storage
-            mount /dev/xvdf /mnt/ecs-storage
-
-            echo "/dev/xvdf /mnt/ecs-storage ext4 defaults,nofail 0 2" >> /etc/fstab
-            EOF
+  block_device_mappings {
+    device_name = "/dev/xvda"
+    ebs {
+      volume_size = 30
+      volume_type = "gp2"
+    }
+  }
     
+  tag_specifications {
+    resource_type = "instance"
     tags = {
       Name = "ecs-instance"
     }
-}
+  }
 
-resource "aws_volume_attachment" "docker_volume_attach" {
-  depends_on = [ aws_ebs_volume.docker_volume ]
-  device_name = "/dev/xvdf"
-  volume_id = aws_ebs_volume.docker_volume.id
-  instance_id = aws_instance.ecs_instance.id
-  force_detach = true
+  user_data = filebase64("${path.module}/ecs.sh")
 }
