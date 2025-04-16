@@ -6,15 +6,11 @@ require("dotenv").config();
 const app = express();
 const ML_SERVICE_URL = process.env.ML_SERVICE_URL || "http://localhost:8000";
 
-const corsOptions = {
-    origin: ['http://localhost:3000', 'http://your-ec2-public-ip:3000'],
-    methods: ['POST', 'GET', 'OPTIONS'],
-    allowedHeaders: ['Content-Type']
-  };
-
-app.use(cors(corsOptions));
+app.use(cors({
+    origin: "*",
+    methods: ["GET","POST"],
+}));
 app.use(express.json());
-app.options('*', cors(corsOptions));
 
 app.post('/preprocess', async(req,res) => {
     console.log('Received request:', req.method, req.url);

@@ -36,7 +36,7 @@ resource "aws_instance" "ecs_instance" {
 
     git clone https://github.com/Romit-Kumar18/PredictEase-Housing-Price-Prediction.git /opt/predictease
 
-    cd /opt/predictease/terraform
+    cd /opt/predictease/terraform/config
     sleep 10
     sudo docker-compose up -d
     EOF
