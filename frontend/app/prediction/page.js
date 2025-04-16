@@ -24,7 +24,7 @@ export default function Home() {
     }
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/preprocess`, {
+      const response = await fetch(`/api/preprocess`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
