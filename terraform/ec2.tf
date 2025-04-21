@@ -33,10 +33,11 @@ resource "aws_instance" "ecs_instance" {
     docker pull romitkumar18/predictease-housing-price-prediction-frontend:latest
     docker pull romitkumar18/predictease-housing-price-prediction-backend:latest
     docker pull romitkumar18/predictease-housing-price-prediction-ml-service:latest
+    docker pull romitkumar18/predictease-housing-price-prediction-nginx:latest
 
     git clone https://github.com/Romit-Kumar18/PredictEase-Housing-Price-Prediction.git /opt/predictease
 
-    cd /opt/predictease/terraform/config
+    cd /opt/predictease/terraform
     sleep 10
     sudo docker-compose up -d
     EOF
