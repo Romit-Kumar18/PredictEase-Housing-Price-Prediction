@@ -24,7 +24,7 @@ export default function PredictionForm() {
         }
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/preprocess`, {
+            const response = await fetch(`/backend/preprocess`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
