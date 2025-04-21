@@ -1,9 +1,6 @@
-"use client";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 export default function Home() {
-  const router = useRouter();
   return (
     <div className="h-max p-6 bg-[#212121] font-[family-name:var(--font-geist-mono)]">
       <div className="flex flex-col items-center font-[family-name:var(--font-geist-sans)] text-[#ffffff] text-4xl --drop-shadow-xl font-bold">

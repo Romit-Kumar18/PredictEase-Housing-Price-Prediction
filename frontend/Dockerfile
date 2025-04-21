@@ -1,10 +1,13 @@
-FROM node:23-alpine-slim AS builder
+FROM node:slim AS builder
+
 WORKDIR /app
-COPY package.json package-lock.json ./
+
+COPY package*.json .
 RUN npm install
+
 COPY . .
 RUN npm run build
-FROM nginx:alpine3.21-slim
-WORKDIR /app
-COPY --from=builder /app ./
+
+EXPOSE 3000
+
 CMD ["npm", "start"]

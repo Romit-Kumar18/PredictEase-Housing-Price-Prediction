@@ -1,11 +1,11 @@
-FROM node:22-alpine
+FROM node:slim
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+COPY package.json .
 RUN npm install
 
 COPY . .
 
 EXPOSE 5000
-CMD ["node", "src/server.js"]
+CMD ["npm", "run", "start"]
