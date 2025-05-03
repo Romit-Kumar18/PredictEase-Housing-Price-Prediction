@@ -12,8 +12,9 @@ resource "aws_instance" "ecs_instance" {
     volume_size = 30
     volume_type = "gp3"
   }
+
   tags = {
-    Name = "ecs-instance"
+    Name = "k8s-instance"
   }
 
   user_data = <<-EOF
@@ -23,23 +24,19 @@ resource "aws_instance" "ecs_instance" {
     set -x
 
     sudo yum update -y
-    sudo yum install -y git libffi libffi-devel openssl-devel libxcrypt-compat chkconfig
-    sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
-    sudo chmod +x /usr/local/bin/docker-compose
+    sudo yum install -y git
 
-    sudo chkconfig docker on
-    sudo service docker start
+    curl -sfL https://get.k3s.io | sh -
 
-    docker pull romitkumar18/predictease-housing-price-prediction-frontend:latest
-    docker pull romitkumar18/predictease-housing-price-prediction-backend:latest
-    docker pull romitkumar18/predictease-housing-price-prediction-ml-service:latest
-    docker pull romitkumar18/predictease-housing-price-prediction-nginx:latest
+    sleep 30
+
+    export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 
     git clone https://github.com/Romit-Kumar18/PredictEase-Housing-Price-Prediction.git /opt/predictease
 
-    cd /opt/predictease/terraform
-    sleep 10
-    sudo docker-compose up -d
-    EOF
+    sleep 15
+
+    kubectl apply -f /opt/predictease/k8s/
+  EOF
 
 }
