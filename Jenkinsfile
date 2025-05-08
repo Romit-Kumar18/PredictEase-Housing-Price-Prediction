@@ -10,7 +10,7 @@ pipeline {
 
   environment {
     DOCKER_CREDS = credentials('dockerhub-creds')
-    AWS_CREDS   = credentials('aws-creds')
+    AWS_CREDS = credentials('aws-creds')
     TF_WORKING_DIR = 'terraform'
   }
 
