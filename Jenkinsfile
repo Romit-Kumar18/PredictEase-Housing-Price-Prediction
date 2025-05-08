@@ -15,8 +15,9 @@ pipeline {
   stages {
     stage('Init') {
       steps {
-        echo "Logging into Docker Hub as ${env.DOCKER_CREDS_USR}"
-        sh 'echo $DOCKER_CREDS_PSW | docker login -u $DOCKER_CREDS_USR --password-stdin'
+        withEnv(["DOCKER_HOST=tcp://host.docker.internal:2375"]) {
+          sh 'echo $DOCKER_CREDS_PSW | docker login -u $DOCKER_CREDS_USR --password-stdin'
+        }
       }
     }
 
