@@ -57,7 +57,7 @@ app.post('/preprocess', async(req,res) => {
         console.log(response.data)
 
     } catch (e) {
-        console.error('Full error stack: ', e);
+        console.error('Full error stack:', e);
         res.status(500).json({ 
             error: e.message,
             stack: process.env.NODE_ENV !== 'production' ? e.stack : undefined
