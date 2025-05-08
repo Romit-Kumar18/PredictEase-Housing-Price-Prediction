@@ -1,0 +1,52 @@
+name: Build, Push Docker Images and Run SonarQube Analysis
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-analyze:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - name: backend
+            context: ./backend
+            image: romitkumar18/predictease-housing-price-prediction-backend
+          - name: frontend
+            context: ./frontend
+            image: romitkumar18/predictease-housing-price-prediction-frontend
+          - name: ml-service
+            context: ./ml-service
+            image: romitkumar18/predictease-housing-price-prediction-ml-service
+          - name: nginx
+            context: ./nginx
+            image: romitkumar18/predictease-housing-price-prediction-nginx
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push ${{ matrix.name }} image
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ matrix.context }}
+          push: true
+          tags: ${{ matrix.image }}:latest
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v1.0.0
+        with:
+          projectBaseDir: ${{ matrix.context }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
