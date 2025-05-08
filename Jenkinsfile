@@ -21,6 +21,12 @@ pipeline {
       }
     }
 
+    stage('Inspect Workspace') {
+      steps {
+        sh 'pwd && ls -R .'
+      }
+    }
+
     stage('Build & Push Images') {
       steps {
         script {
