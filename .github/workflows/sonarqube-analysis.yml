@@ -1,19 +1,33 @@
-name: Build
+name: SonarCloud Analysis
+
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    types: [opened, synchronize, reopened]
+    branches: [ "main" ]
+
 jobs:
-  sonarqube:
-    name: SonarQube
-    runs-on: windows-latest
+  analyze:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - name: backend
+            path: backend
+          - name: frontend
+            path: frontend
+          - name: ml-service
+            path: ml-service
+          - name: nginx
+            path: nginx
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v5
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2.1.0
+        with:
+          projectBaseDir: ${{ matrix.path }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
