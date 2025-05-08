@@ -63,10 +63,7 @@ pipeline {
 
     stage('Validate AWS') {
       steps {
-        withEnv([
-          "AWS_ACCESS_KEY_ID=${env.AWS_CREDS_USR}",
-          "AWS_SECRET_ACCESS_KEY=${env.AWS_CREDS_PSW}"
-        ]) {
+        withCredentials([usernamePassword(credentialsId: 'aws-creds', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
           sh 'which aws'
           sh 'aws --version'
           sh 'aws sts get-caller-identity'
