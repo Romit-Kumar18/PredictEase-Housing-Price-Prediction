@@ -61,6 +61,17 @@ pipeline {
       }
     }
 
+    stage('Validate AWS Creds') {
+      steps {
+        withEnv([
+          "AWS_ACCESS_KEY_ID=${env.AWS_CREDS_USR}",
+          "AWS_SECRET_ACCESS_KEY=${env.AWS_CREDS_PSW}"
+        ]) {
+          sh 'aws sts get-caller-identity'
+        }
+      }
+    }
+
     stage('Terraform Plan') {
       steps {
         withEnv([
