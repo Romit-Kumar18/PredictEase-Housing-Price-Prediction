@@ -1,0 +1,70 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials-id')
+        DOCKERHUB_USER = 'your-dockerhub-username'
+        IMAGE_TAG = "${env.BUILD_NUMBER}"
+    }
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git branch: 'main', url: 'https://github.com/your-username/your-repo.git'
+            }
+        }
+
+        stage('Code Quality Analysis') {
+            steps {
+                script {
+                    withSonarQubeEnv('SonarQubeServer') {
+                        sh 'sonar-scanner'
+                    }
+                }
+            }
+        }
+
+        stage('Build Docker Images') {
+            steps {
+                script {
+                    sh 'docker build -t $DOCKERHUB_USER/frontend:$IMAGE_TAG ./frontend'
+                    sh 'docker build -t $DOCKERHUB_USER/backend:$IMAGE_TAG ./backend'
+                    sh 'docker build -t $DOCKERHUB_USER/ml-service:$IMAGE_TAG ./ml-service'
+                }
+            }
+        }
+
+        stage('Push Images to Docker Hub') {
+            steps {
+                script {
+                    sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_USER --password-stdin'
+                    sh 'docker push $DOCKERHUB_USER/frontend:$IMAGE_TAG'
+                    sh 'docker push $DOCKERHUB_USER/backend:$IMAGE_TAG'
+                    sh 'docker push $DOCKERHUB_USER/ml-service:$IMAGE_TAG'
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    sh 'kubectl apply -f k8s/frontend-deployment.yaml'
+                    sh 'kubectl apply -f k8s/backend-deployment.yaml'
+                    sh 'kubectl apply -f k8s/ml-deployment.yaml'
+                    sh 'kubectl apply -f k8s/frontend-service.yaml'
+                    sh 'kubectl apply -f k8s/backend-service.yaml'
+                    sh 'kubectl apply -f k8s/ml-service.yaml'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Deployment successful: Build #${env.BUILD_NUMBER}"
+        }
+        failure {
+            echo "Deployment failed: Build #${env.BUILD_NUMBER}"
+        }
+    }
+}

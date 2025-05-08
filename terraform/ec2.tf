@@ -1,5 +1,5 @@
 resource "aws_instance" "ecs_instance" {
-  ami = "ami-0cf4380e9a9430646"
+  ami = "ami-0f88e80871fd81e91"
   instance_type = "t2.micro"
   key_name = "my-key"
   iam_instance_profile = aws_iam_instance_profile.ecs_profile.name
@@ -9,12 +9,11 @@ resource "aws_instance" "ecs_instance" {
   ebs_block_device {
     device_name = "/dev/xvda"
     delete_on_termination = true
-    volume_size = 30
+    volume_size = 22
     volume_type = "gp3"
   }
-
   tags = {
-    Name = "k8s-instance"
+    Name = "ecs-instance"
   }
 
   user_data = <<-EOF
@@ -24,19 +23,24 @@ resource "aws_instance" "ecs_instance" {
     set -x
 
     sudo yum update -y
-    sudo yum install -y git
+    sudo yum install -y docker
+    sudo yum install -y git libffi libffi-devel openssl-devel libxcrypt-compat chkconfig
+    sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+    sudo chmod +x /usr/local/bin/docker-compose
 
-    curl -sfL https://get.k3s.io | sh -
+    sudo chkconfig docker on
+    sudo service docker start
 
-    sleep 30
-
-    export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+    docker pull romitkumar18/predictease-housing-price-prediction-frontend:latest
+    docker pull romitkumar18/predictease-housing-price-prediction-backend:latest
+    docker pull romitkumar18/predictease-housing-price-prediction-ml-service:latest
+    docker pull romitkumar18/predictease-housing-price-prediction-nginx:latest
 
     git clone https://github.com/Romit-Kumar18/PredictEase-Housing-Price-Prediction.git /opt/predictease
 
-    sleep 15
-
-    kubectl apply -f /opt/predictease/k8s/
-  EOF
+    cd /opt/predictease/terraform
+    sleep 10
+    sudo docker-compose up -d
+    EOF
 
 }
