@@ -1,8 +1,8 @@
 def IMAGES = [
-  [name: 'romitkumar18/predictease-housing-price-prediction-backend', dir: 'predictease-housing-price-prediction-backend'],
-  [name: 'romitkumar18/predictease-housing-price-prediction-frontend', dir: 'predictease-housing-price-prediction-frontend'],
-  [name: 'romitkumar18/predictease-housing-price-prediction-ml-service', dir: 'predictease-housing-price-prediction-ml-service'],
-  [name: 'romitkumar18/predictease-housing-price-prediction-nginx', dir: 'predictease-housing-price-prediction-nginx']
+  [name: 'romitkumar18/predictease-housing-price-prediction-backend', dir: 'backend'],
+  [name: 'romitkumar18/predictease-housing-price-prediction-frontend', dir: 'frontend'],
+  [name: 'romitkumar18/predictease-housing-price-prediction-ml-service', dir: 'ml-service'],
+  [name: 'romitkumar18/predictease-housing-price-prediction-nginx', dir: 'nginx']
 ]
 
 pipeline {
