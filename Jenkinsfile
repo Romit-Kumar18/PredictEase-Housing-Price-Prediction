@@ -10,6 +10,8 @@ pipeline {
 
   environment {
     DOCKER_CREDS = credentials('dockerhub-creds')
+    AWS_CREDS   = credentials('aws-creds')
+    TF_WORKING_DIR = 'terraform'
   }
 
   stages {
@@ -46,6 +48,46 @@ pipeline {
       }
     }
 
+    stage('Terraform Init') {
+      steps {
+        withEnv([
+          "AWS_ACCESS_KEY_ID=${env.AWS_CREDS_USR}",
+          "AWS_SECRET_ACCESS_KEY=${env.AWS_CREDS_PSW}"
+        ]) {
+          dir(env.TF_WORKING_DIR) {
+            sh 'terraform init -backend-config="bucket=my-tfstate-bucket" -backend-config="region=us-east-1"'
+          }
+        }
+      }
+    }
+
+    stage('Terraform Plan') {
+      steps {
+        withEnv([
+          "AWS_ACCESS_KEY_ID=${env.AWS_CREDS_USR}",
+          "AWS_SECRET_ACCESS_KEY=${env.AWS_CREDS_PSW}"
+        ]) {
+          dir(env.TF_WORKING_DIR) {
+            sh 'terraform plan -out=tfplan'
+          }
+        }
+      }
+    }
+
+    stage('Terraform Apply') {
+      steps {
+        withEnv([
+          "AWS_ACCESS_KEY_ID=${env.AWS_CREDS_USR}",
+          "AWS_SECRET_ACCESS_KEY=${env.AWS_CREDS_PSW}"
+        ]) {
+          dir(env.TF_WORKING_DIR) {
+            sh 'terraform apply -auto-approve tfplan'
+          }
+        }
+      }
+    }
+
+
     stage('Cleanup') {
       steps {
         echo 'Removing local images…'
@@ -61,6 +103,10 @@ pipeline {
   post {
     always {
       sh 'docker logout'
+      echo 'Cleaning up Terraform workflow…'
+      dir(env.TF_WORKING_DIR) {
+        sh 'rm -f tfplan'
+      }
     }
   }
 }
